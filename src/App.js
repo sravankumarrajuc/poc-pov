@@ -12,7 +12,7 @@ import Header from './Header';
 import Login from './Login';
 
 function App() {
-  const clientId = "776418814053-ft86q5rp1dq4l27vjjshh07k0cnsmk84.apps.googleusercontent.com";
+  const clientId = "397652735982-dfhilu4dql1al5bei6mi8tb170hphk30.apps.googleusercontent.com";
   useEffect(() => {
     function start() {
       gapi.auth2.init({

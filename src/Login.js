@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PocListing from './PocListing';
 import { useState } from "react";
 import { BsGoogle } from 'react-icons/bs';
-const clientId = "776418814053-ft86q5rp1dq4l27vjjshh07k0cnsmk84.apps.googleusercontent.com";
+const clientId = "397652735982-dfhilu4dql1al5bei6mi8tb170hphk30.apps.googleusercontent.com";
 
 const Login = () => {
    const [isSignedIn, setIsSignedIn] = useState(false);
@@ -32,7 +32,7 @@ const Login = () => {
             </div>
          ) :
             (
-               <section form="vh-100">
+               <section form="vh-100" style={{marginTop: '15vh'}}>
                   <div className="container-fluid h-custom">
                      <div className="row d-flex justify-content-center align-items-center h-100">
                         <div className="col-md-9 col-lg-6 col-xl-5">
