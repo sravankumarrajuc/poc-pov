@@ -13,7 +13,7 @@ code {
 }
 
 .row label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
 }
 .filter_div {
@@ -31,4 +31,34 @@ code {
 }
 .excel-btn {
   color: black !important;
+}
+
+.poc-table {
+  font-size: 11px;
+}
+input, textarea, select{
+  font-size: 11px !important;
+}
+
+.custom-input {
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  appearance: none;
+  border-radius: 0.375rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  font-size: 12px !important;
+}
+table>tbody {
+  text-align: initial;
+}
+.edit-input {
+  width: 100%;
+  padding: 15px 5px;
+}
+
+.edit-input:hover {
+  background-color: hsl(240, 100%, 90);
+  cursor: pointer;
 }

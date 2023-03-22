@@ -29,6 +29,9 @@ const PocEdit = () => {
             setCommitteddata(resp.committeddata)
             setStatus(resp.status)
             setUpdateddate(date)
+            setGrowthleader(resp.growthleader)
+            setPocother(resp.pocother)
+            setcontent(resp.content)
         }).catch((err) => {
             console.log(err.message);
         })
@@ -51,12 +54,15 @@ const PocEdit = () => {
     const [status, setStatus] = useState("");
     const [updateddate, setUpdateddate] = useState("");
     const [createdby, setCreatedby] = useState(localStorage.getItem("user-name"))
+    const [growthleader, setGrowthleader] = useState("")
+    const [pocother, setPocother] = useState("")
+    const [content, setcontent] = useState("")
 
     const navigate = useNavigate();
 
     const handlesubmit = (e) => {
         e.preventDefault();
-        const empdata = { accname, requestorname, povCheck, pocCheck, priority, project, povtitle, description, valuedata, etavaluedata, currentdate, committeddata, status, updateddate,createdby };
+        const empdata = { accname, requestorname, povCheck, pocCheck, priority, project, povtitle, description, valuedata, etavaluedata, currentdate, committeddata, status, updateddate,createdby, growthleader,pocother,content};
 
 
         fetch("http://localhost:8000/poc/" + empid, {
@@ -80,7 +86,7 @@ const PocEdit = () => {
 
                         <div className="card" style={{ "textAlign": "left" }}>
                             <div className="card-title text-center">
-                                <h2>POC / POV Request Form Edit</h2>
+                                <h4>POC / POV Request Form Edit</h4>
                             </div>
                             <div className="card-body" style={{paddingTop: '0px'}}>
 
@@ -93,7 +99,7 @@ const PocEdit = () => {
                                         </div>
                                     </div>
 
-                                    <div className="col-lg-6 col-sm-6">
+                                    <div className="col-lg-4 col-sm-4">
                                         <div className="form-group">
                                             <label>Account Name</label>
                                             <input required value={accname} list="account-data" onMouseDown={e => valchange(true)} onChange={e => accnamechange(e.target.value)} className="form-control"></input>
@@ -116,11 +122,22 @@ const PocEdit = () => {
                                         </div>
                                     </div>
 
-                                    <div className="col-lg-6 col-sm-6">
+                                    <div className="col-lg-4 col-sm-4">
                                         <div className="form-group">
                                             <label>Requestor Name</label>
                                             <input value={requestorname} list="requestor-name" onChange={e => requestornamechange(e.target.value)} className="form-control"></input>
                                             <datalist id="requestor-name">
+                                                <option value="Ram Mohanreddy">Ram Mohanreddy</option>
+                                                <option value="Suresh S">Suresh S</option>
+                                                <option value="Nitin Pandey">Nitin Pandey</option>
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4 col-sm-4">
+                                        <div className="form-group">
+                                            <label>Growth Leader Name</label>
+                                            <input value={growthleader} list="growth-leader-name" placeholder="Growth Leader Name" onChange={e => setGrowthleader(e.target.value)} className="form-control"></input>
+                                            <datalist id="growth-leader-name">
                                                 <option value="Ram Mohanreddy">Ram Mohanreddy</option>
                                                 <option value="Suresh S">Suresh S</option>
                                                 <option value="Nitin Pandey">Nitin Pandey</option>
@@ -140,9 +157,11 @@ const PocEdit = () => {
                                     <div className="col-lg-12">
                                         <div className="form-group">
                                             <input type="checkbox" value={povCheck} onChange={e => setPovCheck(e.target.checked)} ></input>
-                                            <label>&nbsp; POV </label>&emsp;&emsp;
+                                            <label>&nbsp; POV </label><br/>
                                             <input type="checkbox" value={pocCheck} onChange={e => setPocCheck(e.target.checked)} ></input>
-                                            <label>&nbsp; POC </label>
+                                            <label>&nbsp; POC </label><br/>
+                                            <label>Others : &nbsp; </label>
+                                            <input type="text"  value={pocother} onChange={e => setPocother(e.target.value)} ></input>
                                         </div>
                                     </div>
                                     <div className="col-lg-6 col-sm-6">
@@ -196,20 +215,38 @@ const PocEdit = () => {
 
                                     <div className="col-lg-6">
                                         <div className="form-group">
-                                            <label>ETA Value</label>
-                                            <input value={etavaluedata} onChange={e => etavaluedatachange(e.target.value)} className="form-control"></input>
+                                            <label>ETA Date</label>
+                                            <input type="date" value={etavaluedata} onChange={e => etavaluedatachange(e.target.value)} className="form-control"></input>
                                         </div>
                                     </div>
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-4">
                                         <div className="form-group">
                                             <label>Committed ETA</label>
-                                            <input value={committeddata} onChange={e => setCommitteddata(e.target.value)} className="form-control"></input>
+                                            <input type="date" value={committeddata} onChange={e => setCommitteddata(e.target.value)} className="form-control"></input>
                                         </div>
                                     </div>
-                                    <div className="col-lg-6">
+                                    <div className="col-lg-4">
                                         <div className="form-group">
                                             <label>Status</label>
-                                            <input value={status} onChange={e => setStatus(e.target.value)} className="form-control"></input>
+                                            <input value={status} list="status-list" onChange={e => setStatus(e.target.value)} className="form-control"></input>
+                                            <datalist id="status-list">
+                                                <option value="Initiated">Initiated</option>
+                                                <option value="In Progress">In Progress</option>
+                                                <option value="On Hold">On Hold</option>
+                                                <option value="Completed">Completed</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-4">
+                                        <div className="form-group">
+                                            <label>Content Availability</label>
+                                            <input value={content} list="content-list" onChange={e => setcontent(e.target.value)} className="form-control"></input>
+                                            <datalist id="content-list">
+                                                <option value="Readily Available">Readily Available</option>
+                                                <option value="Modifications Need">Modifications Need</option>
+                                                <option value="New">New</option>
+                                            </datalist>
                                         </div>
                                     </div>
                                     <div className="col-lg-12">
