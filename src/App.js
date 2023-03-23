@@ -32,8 +32,8 @@ function App() {
           <Route path='/poclist' element={<PocListing />}></Route>
           <Route path='/poc/create' element={<PocCreate />}></Route>
 
-          <Route path='/poc/detail/:empid' element={<PocDetail />}></Route>
-          <Route path='/poc/edit/:empid' element={<PocEdit />}></Route>
+          {/* <Route path='/poc/detail/:empid' element={<PocDetail />}></Route> */}
+          {/* <Route path='/poc/edit/:empid' element={<PocEdit />}></Route> */}
         </Routes>
       
     </div>
