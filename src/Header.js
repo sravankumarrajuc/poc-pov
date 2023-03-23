@@ -32,7 +32,7 @@ const header = () => {
     onFailure,
   });
   return (
-    <div>
+    <div className='header-menu'>
       <nav className="navbar navbar-light bg-light">
         <a className="navbar-brand" style={{ paddingLeft: '10px' }}>
           <img src={logo} alt="logo" style={{ height: '30px' }} />

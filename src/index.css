@@ -16,19 +16,24 @@ code {
   font-size: 11px;
   font-weight: 500;
 }
+
 .filter_div {
   float: right;
 }
+
 .table-header {
   font-weight: 700;
 }
+
 .row {
   --bs-gutter-x: 0.2rem !important;
 }
+
 .excel-download {
   background-color: rgb(255 255 255) !important;
   border-color: #e1dcdc !important;
 }
+
 .excel-btn {
   color: black !important;
 }
@@ -36,7 +41,10 @@ code {
 .poc-table {
   font-size: 11px;
 }
-input, textarea, select{
+
+input,
+textarea,
+select {
   font-size: 11px !important;
 }
 
@@ -47,12 +55,14 @@ input, textarea, select{
   border: 1px solid #ced4da;
   appearance: none;
   border-radius: 0.375rem;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
   font-size: 12px !important;
 }
+
 table>tbody {
   text-align: initial;
 }
+
 .edit-input {
   width: 100%;
   padding: 15px 5px;
@@ -61,4 +71,49 @@ table>tbody {
 .edit-input:hover {
   background-color: hsl(240, 100%, 90);
   cursor: pointer;
+}
+
+.custom-button,.custom-button-save,.custom-button-delete {
+  border: 0px;
+  background-color: white;
+  padding: 2px;
+}
+
+.custom-button-delete {
+ color: red;
+}
+
+.custom-button:hover {
+  box-shadow: 0px 0px 10px rgb(0 0 0 / 50%);
+  color: #0202c6;
+}
+
+.custom-button-save:hover {
+  box-shadow: 0px 0px 10px rgb(0 0 0 / 50%);
+  color: #0b9656;
+}
+
+.custom-button-delete:hover {
+  box-shadow: 0px 0px 10px rgb(0 0 0 / 50%);
+  color: red;
+}
+
+.card-body>table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card-body>thead {
+  position: fixed;
+  top: 0;
+  background-color: #fff;
+}
+
+.card-body>tbody {
+  margin-top: 50px; /* Set a margin to prevent the content from being hidden by the fixed header */
+}
+
+.create-div {
+  position: fixed;
+  top:75px
 }

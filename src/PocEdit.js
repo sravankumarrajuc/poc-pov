@@ -244,7 +244,7 @@ const PocEdit = () => {
                                             <input value={content} list="content-list" onChange={e => setcontent(e.target.value)} className="form-control"></input>
                                             <datalist id="content-list">
                                                 <option value="Readily Available">Readily Available</option>
-                                                <option value="Modifications Need">Modifications Need</option>
+                                                <option value="Modifications Needed">Modifications Needed</option>
                                                 <option value="New">New</option>
                                             </datalist>
                                         </div>
