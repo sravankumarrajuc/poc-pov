@@ -9,6 +9,9 @@ import { FaIcons } from "react-icons/fa";
 import "./loading.css";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const PocListing = (props) => {
     const [empdata, empdatachange] = useState(null);
@@ -18,6 +21,8 @@ const PocListing = (props) => {
     const [accountname, setAccountname] = useState(accountNameList)
     const [etavaluedata, etavaluedatachange] = useState("");
     const [logged, setLogged] = useState(localStorage.getItem("user-email"))
+    const [requestemail, setRequestemail] = useState(localStorage.getItem("user-email"))
+    const [requestorname, setRequestorname] = useState(localStorage.getItem("user-name"))
     // console.log("deleteAccess - ",deleteAccess)
 
     const LoadDetail = (id) => {
@@ -62,35 +67,88 @@ const PocListing = (props) => {
             }
             return row;
         });
-        console.log("updatedRowData - ", updatedRowData)
+        // console.log("updatedRowData - ", updatedRowData)
         setRecords(updatedRowData);
 
         // Send updated data to API
         const updatedRow = updatedRowData.find((row) => row.UNIQUE_ID === id);
         console.log("updatedRow - ", updatedRow)
-        // fetch(`https://example.com/api/rows/${id}`, {
-        //   method: "PUT",
-        //   body: JSON.stringify(updatedRow),
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        // })
-        //   .then((response) => {
-        //     if (!response.ok) {
-        //       throw new Error("Failed to update row");
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error(error);
-        //     // Revert the change if the API call fails
-        //     setRowData(rowData);
-        //   });
+        updatePOCDetails(updatedRow)
+    };
+
+    const updatePOCDetails = async (updatedRow) => {
+        console.log("Update - ", updatedRow)
+        let form_details = {
+            "user_details": [
+                {
+                    "EMAIL_ID": requestemail,
+                    "USERNAME": requestorname
+                }
+            ],
+            "POC_DATA": [updatedRow]
+        };
+        let data = await fetch("https://rre.dev.factspanapps.com:5009/edit_poc", {
+            method: "POST",
+            body: JSON.stringify(form_details),
+        }).then(response => response.json())
+            .then(result => {
+                // Handle the result
+                console.log(result);
+                toast.success(result.Message, {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                loadPOCDetails();
+            })
+            .catch(error => {
+                // Handle errors
+                console.error(error);
+                toast.error("An error occurred.", {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            });
     };
 
     const handleDelete = (id) => {
         const deleteRow = records.find((row) => row.UNIQUE_ID === id);
-        console.log("deleteRow - ",deleteRow)
+        console.log("deleteRow - ", deleteRow)
+        deletePOCDetails(deleteRow)
     }
+    const deletePOCDetails = async (deleteRow) => {
+        console.log("Delete - ", deleteRow)
+        let form_details = {
+            "user_details": [
+                {
+                    "EMAIL_ID": requestemail,
+                    "USERNAME": requestorname
+                }
+            ],
+            "POC_DATA": [deleteRow]
+        };
+        let data = await fetch("https://rre.dev.factspanapps.com:5009/delete_poc", {
+            method: "POST",
+            body: JSON.stringify(form_details),
+        })
+            .then(response => response.json())
+            .then(result => {
+                // Handle the result
+                console.log(result);
+                toast.success(result.Message, {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                loadPOCDetails();
+            })
+            .catch(error => {
+                // Handle errors
+                console.error(error);
+                toast.error("An error occurred.", {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            });
+    };
 
     // Function to handle saving edited data
     function saveData(index) {
@@ -107,7 +165,7 @@ const PocListing = (props) => {
         // Clear editableRows state
         setEditableRows([]);
     }
-    const loadRevenueDetails = async () => {
+    const loadPOCDetails = async () => {
         let form_details = {
             "query_type": "poc_details"
         };
@@ -122,15 +180,7 @@ const PocListing = (props) => {
     };
 
     useEffect(() => {
-        // fetch("http://localhost:8000/poc").then((res) => {
-        //     return res.json();
-        // }).then((resp) => {
-        //     empdatachange(resp);
-        //     setRecords(resp)
-        // }).catch((err) => {
-        //     console.log(err.message);
-        // })
-        loadRevenueDetails();
+        loadPOCDetails();
     }, [])
     console.log("empdata - ", empdata)
     console.log("accountname - ", accountname);
@@ -138,13 +188,21 @@ const PocListing = (props) => {
     console.log("records - ", records)
     const handleFilter = (e) => {
         const newData = empdata.filter(row => {
-            return (row.ACCOUNT_NAME.toLowerCase().includes(e.target.value.toLowerCase()) || row.REQUESTOR_NAME.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.PROJECT_FUNNEL.toLowerCase().includes(e.target.value.toLowerCase()) || row.PRIORITY.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.CREATED_DATE.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.POV_POC_TITLE.toLowerCase().includes(e.target.value.toLowerCase()) || row.DESCRIPTION.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.ETA_COMPLETE_DATE.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.COMITTED_ETA.toLowerCase().includes(e.target.value.toLowerCase()) || row.STATUS.toLowerCase().includes(e.target.value.toLowerCase())
-                || row.UPDATED_DATE.toLowerCase().includes(e.target.value.toLowerCase()))
+            return (
+                (row.ACCOUNT_NAME && row.ACCOUNT_NAME.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.SOW_NAME && row.SOW_NAME.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.FORM_TYPE_POC_POV && row.FORM_TYPE_POC_POV.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.REQUESTOR_NAME && row.REQUESTOR_NAME.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.PROJECT_FUNNEL && row.PROJECT_FUNNEL.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.PRIORITY && row.PRIORITY.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.CREATED_DATE && row.CREATED_DATE.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.POV_POC_TITLE && row.POV_POC_TITLE.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.DESCRIPTION && row.DESCRIPTION.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.ETA_COMPLETE_DATE && row.ETA_COMPLETE_DATE.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.COMITTED_ETA && row.COMITTED_ETA.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.STATUS && row.STATUS.toLowerCase().includes(e.target.value.toLowerCase())) ||
+                (row.UPDATED_DATE && row.UPDATED_DATE.toLowerCase().includes(e.target.value.toLowerCase()))
+            )
         })
         setRecords(newData)
     }
@@ -159,7 +217,7 @@ const PocListing = (props) => {
         etavaluedatachange(formattedDate);
     };
 
-    
+
     if (!records) {
         return <div className="container-fuild">
             <Header></Header>
@@ -172,7 +230,7 @@ const PocListing = (props) => {
 
         <div className="container-fuild">
             <Header></Header>
-            <div className="card" style={{ fontSize: "12px" }}>
+            <div className="card" style={{ fontSize: "12px", top: "75px" }}>
                 {/* <div className="card-title">
                     <h2>Employee Listing</h2>
                 </div> */}
@@ -208,53 +266,8 @@ const PocListing = (props) => {
                         </thead>
                         <tbody>
                             {records.map((row) => (
-                                <TableRow key={row.UNIQUE_ID} row={row} handleEdit={handleEdit} handleDelete={handleDelete} logged ={logged}/>
+                                <TableRow key={row.UNIQUE_ID} row={row} handleEdit={handleEdit} handleDelete={handleDelete} logged={logged} />
                             ))}
-                            {/* {records &&
-                                records.map((item, index) => (
-                                    <tr key={item.UNIQUE_ID}> */}
-                            {/* <td>{item.id}</td> */}
-                            {/* <td>{item.ACCOUNT_NAME}</td>
-                                        <td>{item.SOW_NAME}</td>
-                                        <td>{item.REQUESTOR_NAME}</td>
-                                        <td>{item.GROWTH_LEADER_NAME}</td>
-                                        <td>{item.PROJECT_FUNNEL}</td>
-                                        <td>{item.PRIORITY}</td>
-                                        <td>{formatDate(item.CREATED_DATE)}</td>
-                                        <td>{item.FORM_TYPE_POC_POV == "" ? "" : item.FORM_TYPE_POC_POV}</td>
-                                        <td>{item.POV_POC_TITLE}</td>
-                                        <td>{item.DESCRIPTION}</td>
-                                        <td>{item.PROJECT_VALUE}</td>
-                                        <td>{formatDate(item.ETA_COMPLETE_DATE)}</td>
-                                        <td>{editableRows.includes(item.UNIQUE_ID) ? <input type="date" className="edit-input" value={item.COMITTED_ETA} defaultValue={item.COMITTED_ETA} /> : (item.COMITTED_ETA)}</td>
-                                        <td>{editableRows.includes(item.UNIQUE_ID) ? <select id="status-list" value={item.STATUS}>
-                                            <option value="Initiated">Initiated</option>
-                                            <option value="In Progress">In Progress</option>
-                                            <option value="On Hold">On Hold</option>
-                                            <option value="Completed">Completed</option>
-                                            <option value="Cancelled">Cancelled</option>
-                                        </select> : (item.STATUS)}</td>
-                                        <td>{editableRows.includes(item.UNIQUE_ID) ? <input type="text" className="edit-input" defaultValue={item.CONTENT_AVAILABILITY} /> : item.CONTENT_AVAILABILITY}</td>
-                                        <td>{formatDate(item.UPDATED_DATE)}</td>
-                                        <td> */}
-                            {/* <a onClick={() => { Removefunction(item.id) }} className="btn btn-danger btn-sm"><BsFillTrashFill size={12}/></a> */}
-                            {/* <a onClick={() => { LoadDetail(item.id) }} className="btn btn-primary">Details</a> */}
-                            {/* {editableRows.includes(item.UNIQUE_ID) ? (
-                                                <>
-                                                <button className="btn btn-danger btn-sm" title="Cancel" onClick={() => toggleEditable(item.UNIQUE_ID)}><BsFillXSquareFill size={12} /></button>
-                                                <button className="btn btn-success btn-sm" title="Inline Edit" onClick={() => saveData(item.UNIQUE_ID)}><BsClipboard2CheckFill size={12} /></button>
-                                                </>
-                                                 ) : (
-                                                <>
-                                                    <button className="btn btn-success btn-sm" title="Inline Edit" onClick={() => toggleEditable(item.UNIQUE_ID)}><BsPencilSquare size={12} /></button>
-                                                </>
-                                            )}
-                                            <a onClick={() => { LoadEdit(item.UNIQUE_ID) }} className="btn btn-success btn-sm"><BsPencilSquare size={12} /></a>
-                                        </td>
-                                    </tr>
-                                ))
-                            } */}
-
                         </tbody>
 
                     </table>
@@ -264,7 +277,7 @@ const PocListing = (props) => {
     );
 }
 
-const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
+const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedETA, seteditedETA] = useState("");
     const [editedStatus, seteditedStatus] = useState("");
@@ -273,7 +286,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
     // if(logged === "sravankumar.raju@factspan.com"){
     //     setDeleteAccess(true)
     // }
-    console.log("logged in ",logged)
+    console.log("logged in ", logged)
     const handleStatusChange = (e) => {
         seteditedStatus(e.target.value);
     };
@@ -318,6 +331,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
     }
 
     const statusOptions = [
+        { value: "-1", label: "Selected Status" },
         { value: "Initiated", label: "Initiated" },
         { value: "In Progress", label: "In Progress" },
         { value: "On Hold", label: "On Hold" },
@@ -326,6 +340,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
     ];
 
     const ContentAvailabilityOptions = [
+        { value: "-1", label: "Select Availability" },
         { value: "Readily Available", label: "Readily Available" },
         { value: "Modifications Needed", label: "Modifications Needed" },
         { value: "New", label: "New" },
@@ -334,13 +349,13 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
     return (
         <tr>
             <td>{row.ACCOUNT_NAME}</td>
-            <td>{row.SOW_NAME}</td>
+            <td>{(row.SOW_NAME).replace(/_/g, " ")}</td>
             <td>{row.REQUESTOR_NAME}</td>
             <td>{row.GROWTH_LEADER_NAME}</td>
             <td>{row.PROJECT_FUNNEL}</td>
             <td>{row.PRIORITY}</td>
             <td>{formatDate(row.CREATED_DATE)}</td>
-            <td>{row.pocCheck}</td>
+            <td>{row.FORM_TYPE_POC_POV}</td>
             <td>{row.POV_POC_TITLE}</td>
             <td>{row.DESCRIPTION}</td>
             <td>{row.PROJECT_VALUE}</td>
@@ -349,6 +364,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
                 <input
                     type="date"
                     name="phone"
+                    className="edit-input"
                     value={editedETA}
                     onChange={handleETAChange}
                 />
@@ -358,7 +374,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
             </td>
             <td>
                 {isEditing ? (
-                    <select name="name" value={editedStatus} onChange={handleStatusChange}>
+                    <select name="name" className="edit-input" value={editedStatus} onChange={handleStatusChange}>
                         {statusOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
@@ -371,7 +387,7 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
             </td>
             <td>
                 {isEditing ? (
-                    <select name="name" value={editedContent} onChange={handleContentChange}>
+                    <select name="name" className="edit-input" value={editedContent} onChange={handleContentChange}>
                         {ContentAvailabilityOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
@@ -384,18 +400,19 @@ const TableRow = ({ row, handleEdit,handleDelete,logged }) => {
             </td>
             <td>{formatDate(row.UPDATED_DATE)}</td>
             <td>
+                <ToastContainer />
                 {isEditing ? (
                     <>
                         <button className="custom-button-save" onClick={handleSaveClick}><BsClipboard2CheckFill size={12} /></button>
                     </>
                 ) : (
                     <>
-                    <button className="custom-button" onClick={handleEditClick}><BsPencilSquare size={12} /></button>
+                        <button className="custom-button" onClick={handleEditClick}><BsPencilSquare size={12} /></button>
                     </>
                 )}
                 {
-                (logged === ("sravankumar.raju@factspan.com" || "ram.mohanreddy@factspan.com") &&
-                    <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>)
+                    (logged === ("sravankumar.raju@factspan.com" || "ram.mohanreddy@factspan.com") &&
+                        <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>)
                 }
             </td>
         </tr>

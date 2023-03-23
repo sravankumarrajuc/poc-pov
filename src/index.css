@@ -97,3 +97,23 @@ table>tbody {
   box-shadow: 0px 0px 10px rgb(0 0 0 / 50%);
   color: red;
 }
+
+.card-body>table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card-body>thead {
+  position: fixed;
+  top: 0;
+  background-color: #fff;
+}
+
+.card-body>tbody {
+  margin-top: 50px; /* Set a margin to prevent the content from being hidden by the fixed header */
+}
+
+.create-div {
+  position: fixed;
+  top:75px
+}

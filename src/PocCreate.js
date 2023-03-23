@@ -4,6 +4,9 @@ import { accountNameList } from "./dropdownData";
 import Header from './Header';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const PocCreate = () => {
     let tempDate = new Date();
@@ -35,6 +38,7 @@ const PocCreate = () => {
     const [sowname, setSowname] = useState("");
     const [sowid, setSowid] = useState("");
     const [requestemail, setRequestemail] = useState(localStorage.getItem("user-email"))
+    const [pocpovtype, setPocpovtype] = useState("");
 
     // const [teamdropdown, setTeamdropdown] = useState([])
 
@@ -58,10 +62,25 @@ const PocCreate = () => {
 
 
     const navigate = useNavigate();
+    useEffect(() => {
+        console.log("povCheck - ", povCheck)
+        console.log("pocCheck - ", pocCheck)
+        console.log("pocother - ", pocother)
+        if (povCheck === true) {
+            setPocpovtype("POC")
+        }
+        if (pocCheck === true) {
+            setPocpovtype("POV")
+        }
+        if (pocother != "") {
+            setPocpovtype(pocother)
+        }
+        console.log("pocpovtype - ", pocpovtype)
+    })
 
-    const handlesubmit = (e) => {
+    const Handlesubmit = (e) => {
         e.preventDefault();
-        const empdata = { accid,sowid,accname,sowname,requestorname, povCheck, pocCheck, priority, project, povtitle, description, valuedata, etavaluedata, currentdate, committeddata, status, updateddate, createdby, growthleader, pocother, content };
+        const empdata = { accid, sowid, accname, sowname, requestorname, povCheck, pocCheck, priority, project, povtitle, description, valuedata, etavaluedata, currentdate, committeddata, status, updateddate, createdby, growthleader, pocother, content };
 
         // const dateValue = new Date(etavaluedata);
         // const year = dateValue.getFullYear();
@@ -70,6 +89,7 @@ const PocCreate = () => {
         // const formattedDate = `${year}-${month}-${day}`; // "2023-03-07"
         // console.log("formattedDate - ",formattedDate)
         // etavaluedatachange(formattedDate)
+
 
         const saveRevenueDetails = async () => {
             let form_details = {
@@ -87,6 +107,7 @@ const PocCreate = () => {
                     "SOW_NAME": sowname,
                     "REQUESTOR_ID": "",
                     "REQUESTOR_NAME": requestorname,
+                    "FORM_TYPE_POC_POV": pocpovtype,
                     "GROWTH_LEADER_ID": "",
                     "GROWTH_LEADER_NAME": growthleader,
                     "PROJECT_FUNNEL": project,
@@ -104,17 +125,30 @@ const PocCreate = () => {
                     "UPDATED_DATE": ""
                 }]
             };
-            console.log("form_details - ",form_details)
+            console.log("form_details - ", form_details)
             let data = await fetch("https://rre.dev.factspanapps.com:5009/add_new_poc", {
                 method: "POST",
                 body: JSON.stringify(form_details),
-            }).then((res) => {
-                console.log("res - ",res)
-                alert('Saved successfully.')
-                // navigate('/');
-            }).catch((err) => {
-                console.log(err.message)
-            });
+            }).then(response => response.json())
+                .then(result => {
+                    // Handle the result
+                    console.log(result);
+                    toast.success(result.Message, {
+                        autoClose: 2000,
+                        position: toast.POSITION.TOP_RIGHT,
+                        onClose: () => {
+                            navigate('/');
+                        }
+                    });
+                })
+                .catch(error => {
+                    // Handle errors
+                    console.error(error);
+                    toast.error("An error occurred.", {
+                        autoClose: 2000,
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                });
             // const result = await data.json();
             // console.log("result", result);
             // setRecords(result.DATA)
@@ -139,44 +173,45 @@ const PocCreate = () => {
         const selectedAccountData = accountdropdown.find(
             (account) => account.ACCOUNT_ID === selectedAccountId
         );
-        console.log("selectedAccountData - ",selectedAccountData)
+        console.log("selectedAccountData - ", selectedAccountData)
         accnamechange(selectedAccountData.ACCOUNT_NAME)
         setSowDatadropdown(selectedAccountData.SOW_DATA);
-        console.log("sowdatadropdown - ",sowdatadropdown)
+        console.log("sowdatadropdown - ", sowdatadropdown)
     };
 
-    const handleSowChange = (event) =>{
+    const handleSowChange = (event) => {
         const sowID = event.target.value;
         setSowid(sowID)
         const selectSowData = sowdatadropdown.find(
             (sow) => sow.SOW_ID === sowID
         );
-        console.log("selectSowData - ",selectSowData.SOW_AMOUNT)
+        console.log("selectSowData - ", selectSowData.SOW_AMOUNT)
         setSowname(selectSowData.SOW_NAME)
         valuedatachange(selectSowData.SOW_AMOUNT);
     }
 
     const handleDateChange = (date) => {
-        console.log("date - ",date)
+        console.log("date - ", date)
         // convert the selected date to YYYY-MM-DD format
         const year = date.getFullYear();
         const month = ("0" + (date.getMonth() + 1)).slice(-2);
         const day = ("0" + date.getDate()).slice(-2);
         const formattedDate = `${year}-${month}-${day}`;
-        console.log("formattedDate - ",formattedDate)
+        console.log("formattedDate - ", formattedDate)
         etavaluedatachange(formattedDate);
-      };
-    
+    };
+
 
     return (
         <div>
-            <div className="header-class">
+            {/* <div className="header-class"> */}
                 <Header></Header>
-            </div>
+            {/* </div> */}
             <br></br>
-            <div className="row">
+            <div className="create-div">
+                <ToastContainer />
                 <div className="offset-sm-2 col-lg-9 col-sm-6">
-                    <form className="container" onSubmit={handlesubmit}>
+                    <form className="container" onSubmit={Handlesubmit}>
 
                         <div className="card" style={{ "textAlign": "left" }}>
                             <div className="card-title" style={{ "textAlign": "center" }}>
@@ -247,7 +282,7 @@ const PocCreate = () => {
                                             <label className="form-check-label">POC</label>
                                         </div>
                                     </div> */}
-                                   
+
                                     <div className="col-lg-4 col-sm-4">
                                         <div className="form-group">
                                             <label>Priority</label>
@@ -286,7 +321,7 @@ const PocCreate = () => {
                                         </div>
                                     </div>
 
-                                    
+
                                     <div className="col-lg-6">
                                         <div className="form-group">
                                             <label>Value</label>
