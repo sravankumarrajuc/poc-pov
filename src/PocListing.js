@@ -236,11 +236,13 @@ const PocListing = (props) => {
                 </div> */}
                 <div className="card-body">
                     <div className="divbtn">
-                        <button className="btn btn-primary btn-sm excel-download" style={{ backgroundColor: '#0a95ff' }} onClick={() => exportToExcel(records, 'pocReportData')}><BsFileEarmarkExcelFill size={20} className='excel-btn' /></button>
                         {/* <Link to="poc/create" className="btn btn-success">Add POV/POC (+)</Link> */}
                         <Link to="poc/create" className="btn btn-success btn-sm" style={{ fontSize: '10px' }}>Add POV/POC</Link>
                     </div>
-                    <div className="filter_div"><input type="text" className="form-control" placeholder="Search..." onChange={handleFilter} /></div>
+                    <div className="filter_div">
+                        <button className="btn btn-primary btn-sm excel-download" onClick={() => exportToExcel(records, 'pocReportData')}>Download Excel</button>
+                        <input type="text" className="form-control" placeholder="Search..." onChange={handleFilter} />
+                    </div>
                     <table className="table table-bordered poc-table">
                         <thead className="table-header">
                             <tr>
@@ -261,13 +263,17 @@ const PocListing = (props) => {
                                 <td>Status</td>
                                 <td>Content Availability</td>
                                 <td>Update Date</td>
-                                <td></td>
+                                {
+                                   ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) && <td></td>
+                                }
+                                
                             </tr>
                         </thead>
                         <tbody>
                             {records.map((row) => (
                                 <TableRow key={row.UNIQUE_ID} row={row} handleEdit={handleEdit} handleDelete={handleDelete} logged={logged} />
                             ))}
+                            <ToastContainer /> 
                         </tbody>
 
                     </table>
@@ -345,7 +351,7 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
         { value: "Modifications Needed", label: "Modifications Needed" },
         { value: "New", label: "New" },
     ];
-
+    console.log("logged - ",logged)
     return (
         <tr>
             <td>{row.ACCOUNT_NAME}</td>
@@ -399,9 +405,11 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
                 )}
             </td>
             <td>{formatDate(row.UPDATED_DATE)}</td>
+            {
+                ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) && 
             <td>
-                <ToastContainer />
-                {isEditing ? (
+               
+                {(isEditing ? (
                     <>
                         <button className="custom-button-save" onClick={handleSaveClick}><BsClipboard2CheckFill size={12} /></button>
                     </>
@@ -409,12 +417,14 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
                     <>
                         <button className="custom-button" onClick={handleEditClick}><BsPencilSquare size={12} /></button>
                     </>
-                )}
+                ))}
                 {
-                    (logged === ("sravankumar.raju@factspan.com" || "ram.mohanreddy@factspan.com") &&
-                        <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>)
+                    (
+                        <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>
+                    )
                 }
             </td>
+            }
         </tr>
     );
 };

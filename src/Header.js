@@ -8,6 +8,7 @@ import { useGoogleLogout } from 'react-google-login';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { BsEscape } from "react-icons/bs";
 
+
 const header = () => {
   const clientId = "397652735982-dfhilu4dql1al5bei6mi8tb170hphk30.apps.googleusercontent.com";
 
@@ -17,7 +18,8 @@ const header = () => {
 
   const onLogoutSuccess = (res) => {
     console.log('Logged out Success');
-    alert('Logged out Successfully');
+    
+    // alert('Logged out Successfully');
     window.location.href = '/';
   };
 
@@ -36,7 +38,7 @@ const header = () => {
       <nav className="navbar navbar-light bg-light">
         <a className="navbar-brand" style={{ paddingLeft: '10px' }}>
           <img src={logo} alt="logo" style={{ height: '30px' }} />
-          <h4 style={{ paddingLeft: '20px' }}>POV/POC Request Form</h4>
+          {/* <h4 style={{ paddingLeft: '20px' }}>POV/POC Request Form</h4> */}
         </a>
         <form className="form-inline">
           {/* <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> */}
