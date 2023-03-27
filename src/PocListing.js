@@ -87,7 +87,7 @@ const PocListing = (props) => {
             ],
             "POC_DATA": [updatedRow]
         };
-        let data = await fetch("https://rre.dev.factspanapps.com:5009/edit_poc", {
+        let data = await fetch("http://43.205.208.162:5009/edit_poc", {
             method: "POST",
             body: JSON.stringify(form_details),
         }).then(response => response.json())
@@ -126,7 +126,7 @@ const PocListing = (props) => {
             ],
             "POC_DATA": [deleteRow]
         };
-        let data = await fetch("https://rre.dev.factspanapps.com:5009/delete_poc", {
+        let data = await fetch("http://43.205.208.162:5009/delete_poc", {
             method: "POST",
             body: JSON.stringify(form_details),
         })
@@ -169,7 +169,7 @@ const PocListing = (props) => {
         let form_details = {
             "query_type": "poc_details"
         };
-        let data = await fetch("https://rre.dev.factspanapps.com:5009/poc_details", {
+        let data = await fetch("http://43.205.208.162:5009/poc_details", {
             method: "POST",
             body: JSON.stringify(form_details),
         });

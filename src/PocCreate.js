@@ -57,7 +57,7 @@ const PocCreate = () => {
         let form_details = {
             "query_type": "poc_details"
         };
-        let data = await fetch("https://rre.dev.factspanapps.com:5009/sow_emp_drop_down", {
+        let data = await fetch("http://43.205.208.162:5009/sow_emp_drop_down", {
             method: "POST",
             body: JSON.stringify(form_details),
         });
@@ -218,7 +218,7 @@ const PocCreate = () => {
                     }]
                 };
                 console.log("form_details - ", form_details)
-                let data = await fetch("https://rre.dev.factspanapps.com:5009/add_new_poc", {
+                let data = await fetch("http://43.205.208.162:5009/add_new_poc", {
                     method: "POST",
                     body: JSON.stringify(form_details),
                 }).then(response => response.json())
