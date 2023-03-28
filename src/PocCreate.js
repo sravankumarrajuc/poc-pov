@@ -63,7 +63,8 @@ const PocCreate = () => {
         });
         const result = await data.json();
         console.log("result", result);
-        setAccountdropdown(result.SOW_DROP_DOWN)
+        let filterArray = (result.SOW_DROP_DOWN).filter(item => item.ACCOUNT_NAME !== "Factspan")
+        setAccountdropdown(filterArray)
     };
 
     useEffect(() => {
