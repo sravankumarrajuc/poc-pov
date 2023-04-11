@@ -128,7 +128,7 @@ const PocEdit = () => {
                                             <input value={requestorname} list="requestor-name" onChange={e => requestornamechange(e.target.value)} className="form-control"></input>
                                             <datalist id="requestor-name">
                                                 <option value="Ram Mohanreddy">Ram Mohanreddy</option>
-                                                <option value="Suresh S">Suresh S</option>
+                                                <option value="Aniruddha Ray">Aniruddha Ray</option>
                                                 <option value="Nitin Pandey">Nitin Pandey</option>
                                             </datalist>
                                         </div>
@@ -139,7 +139,7 @@ const PocEdit = () => {
                                             <input value={growthleader} list="growth-leader-name" placeholder="Growth Leader Name" onChange={e => setGrowthleader(e.target.value)} className="form-control"></input>
                                             <datalist id="growth-leader-name">
                                                 <option value="Ram Mohanreddy">Ram Mohanreddy</option>
-                                                <option value="Suresh S">Suresh S</option>
+                                                <option value="Aniruddha Ray">Aniruddha Ray</option>
                                                 <option value="Nitin Pandey">Nitin Pandey</option>
                                             </datalist>
                                         </div>

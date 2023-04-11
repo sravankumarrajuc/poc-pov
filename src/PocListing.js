@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EmpdataFilter from './pocAccountFilter'
 
 
 const PocListing = (props) => {
@@ -23,6 +24,9 @@ const PocListing = (props) => {
     const [logged, setLogged] = useState(localStorage.getItem("user-email"))
     const [requestemail, setRequestemail] = useState(localStorage.getItem("user-email"))
     const [requestorname, setRequestorname] = useState(localStorage.getItem("user-name"))
+    const [filteredData, setFilteredData] = useState(empdata);
+    const [selectedAccountNames, setSelectedAccountNames] = useState([]);
+    const [selectedStatus, setSelectedStatus] = useState('');
     // console.log("deleteAccess - ",deleteAccess)
 
     const LoadDetail = (id) => {
@@ -178,8 +182,56 @@ const PocListing = (props) => {
         setRecords(result.DATA)
         empdatachange(result.DATA)
     };
+    const handleFilterChange = (selectedAccounts) => {
+        if (selectedAccounts.length === 0) {
+            setRecords(empdata);
+        } else {
+            const filtered = empdata.filter((item) => selectedAccounts.includes(item.ACCOUNT_NAME));
+            setRecords(filtered);
+        }
+    }
+    // handle account name dropdown change
+    // const handleAccountNameChange = (e) => {
+    //     const selectedNames = Array.from(e.target.selectedOptions, option => option.value);
+    //     setSelectedAccountNames(selectedNames);
+
+    //     // filter data based on selected account names and status
+    //     const newData = empdata.filter((item) => {
+    //         const isSelectedAccountName = selectedNames.includes(item.ACCOUNT_NAME);
+    //         const isSelectedStatus = !selectedStatus || item.STATUS === selectedStatus;
+    //         return isSelectedAccountName && isSelectedStatus;
+    //     });
+    //     setRecords(newData);
+    // };
+    const handleAccountChange = (e) => {
+        const { value } = e.target;
+        if (value === "All") {
+            setRecords(empdata);
+        } else {
+          const selectedAccounts = value.split(",");
+          const newData = empdata.filter(
+            (data) => selectedAccounts.indexOf(data.ACCOUNT_NAME) > -1
+          );
+          setRecords(newData);
+        }
+      };
+
+    // handle status dropdown change
+    const handleStatusChange = (e) => {
+        const selectedValue = e.target.value;
+        setSelectedStatus(selectedValue);
+
+        // filter data based on selected account names and status
+        const newData = empdata.filter((item) => {
+            const isSelectedAccountName = !selectedAccountNames.length || selectedAccountNames.includes(item.ACCOUNT_NAME);
+            const isSelectedStatus = !selectedValue || item.STATUS === selectedValue;
+            return isSelectedAccountName && isSelectedStatus;
+        });
+        setRecords(newData);
+    };
 
     useEffect(() => {
+        console.log("Use State")
         loadPOCDetails();
     }, [])
     console.log("empdata - ", empdata)
@@ -216,7 +268,10 @@ const PocListing = (props) => {
         console.log("formattedDate - ", formattedDate)
         etavaluedatachange(formattedDate);
     };
-
+    let accountOptions = []
+    if(empdata != null){
+        accountOptions = ["All", ...new Set(empdata.map((data) => data.ACCOUNT_NAME))];    
+    }
 
     if (!records) {
         return <div className="container-fuild">
@@ -237,11 +292,30 @@ const PocListing = (props) => {
                 <div className="card-body">
                     <div className="divbtn">
                         {/* <Link to="poc/create" className="btn btn-success">Add POV/POC (+)</Link> */}
-                        <Link to="poc/create" className="btn btn-success btn-sm" style={{ fontSize: '10px' }}>Add POV/POC</Link>
+                        <Link to="poc/create" className="btn btn-success btn-sm" style={{ fontSize: '10px' }}>POV/POC Request</Link>
                     </div>
                     <div className="filter_div">
                         <button className="btn btn-primary btn-sm excel-download" onClick={() => exportToExcel(records, 'pocReportData')}>Download Excel</button>
                         <input type="text" className="form-control" placeholder="Search..." onChange={handleFilter} />
+                    </div>
+                    {/* <EmpdataFilter empdata={empdata} onFilterChange={handleFilterChange} /> */}
+                    <div className="row">
+                        {/* <label htmlFor="account-name-dropdown">Filter by Account Name: </label> */}
+                        <select id="account-name-dropdown" className="form-select account-dropdown" onChange={handleAccountChange}>
+                            {accountOptions.map((account) => (
+                                <option value={account} key={account}>
+                                    {account}
+                                </option>
+                            ))}
+                        </select>
+                        {/* <label htmlFor="status-dropdown">Filter by Status: </label> */}
+                        <select id="status-dropdown" className="form-select account-dropdown" onChange={handleStatusChange}>
+                            <option value="">All</option>
+                            {Array.from(new Set(empdata.map((item) => item.STATUS))).map((status) => (
+                                <option key={status} value={status}>{status}</option>
+                            ))}
+                        </select>
+
                     </div>
                     <table className="table table-bordered poc-table">
                         <thead className="table-header">
@@ -256,6 +330,8 @@ const PocListing = (props) => {
                                 <td>Created Date</td>
                                 <td>POV/POC</td>
                                 <td>Title</td>
+                                <td>Customer current Tech stack</td>
+                                <td>Customer Use cases</td>
                                 <td>Description</td>
                                 <td>Value</td>
                                 <td>ETA Date</td>
@@ -264,16 +340,16 @@ const PocListing = (props) => {
                                 <td>Content Availability</td>
                                 <td>Update Date</td>
                                 {
-                                   ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) && <td></td>
+                                    ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) && <td></td>
                                 }
-                                
+
                             </tr>
                         </thead>
                         <tbody>
                             {records.map((row) => (
                                 <TableRow key={row.UNIQUE_ID} row={row} handleEdit={handleEdit} handleDelete={handleDelete} logged={logged} />
                             ))}
-                            <ToastContainer /> 
+                            <ToastContainer />
                         </tbody>
 
                     </table>
@@ -351,7 +427,7 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
         { value: "Modifications Needed", label: "Modifications Needed" },
         { value: "New", label: "New" },
     ];
-    console.log("logged - ",logged)
+    console.log("logged - ", logged)
     return (
         <tr>
             <td>{row.ACCOUNT_NAME}</td>
@@ -363,6 +439,8 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
             <td>{formatDate(row.CREATED_DATE)}</td>
             <td>{row.FORM_TYPE_POC_POV}</td>
             <td>{row.POV_POC_TITLE}</td>
+            <td>{row.CUSTOMER_CURRENT_TECH_STACK}</td>
+            <td>{row.CUSTOMER_USE_CASES}</td>
             <td>{row.DESCRIPTION}</td>
             <td>{row.PROJECT_VALUE}</td>
             <td>{row.ETA_COMPLETE_DATE == "" ? "" : formatDate(row.ETA_COMPLETE_DATE)}</td>
@@ -406,24 +484,24 @@ const TableRow = ({ row, handleEdit, handleDelete, logged }) => {
             </td>
             <td>{formatDate(row.UPDATED_DATE)}</td>
             {
-                ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) && 
-            <td>
-               
-                {(isEditing ? (
-                    <>
-                        <button className="custom-button-save" onClick={handleSaveClick}><BsClipboard2CheckFill size={12} /></button>
-                    </>
-                ) : (
-                    <>
-                        <button className="custom-button" onClick={handleEditClick}><BsPencilSquare size={12} /></button>
-                    </>
-                ))}
-                {
-                    (
-                        <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>
-                    )
-                }
-            </td>
+                ((logged === "ram.mohanreddy@factspan.com" || logged === "sravankumar.raju@factspan.com")) &&
+                <td>
+
+                    {(isEditing ? (
+                        <>
+                            <button className="custom-button-save" onClick={handleSaveClick}><BsClipboard2CheckFill size={12} /></button>
+                        </>
+                    ) : (
+                        <>
+                            <button className="custom-button" onClick={handleEditClick}><BsPencilSquare size={12} /></button>
+                        </>
+                    ))}
+                    {
+                        (
+                            <button className="custom-button-delete" onClick={handleDeleteClick}><BsFillTrashFill size={12} /></button>
+                        )
+                    }
+                </td>
             }
         </tr>
     );
