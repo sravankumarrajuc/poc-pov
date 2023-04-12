@@ -335,30 +335,30 @@ const PocCreate = () => {
           ],
         };
         console.log("form_details - ", form_details);
-        // let data = await fetch("http://43.205.208.162:5009/add_new_poc", {
-        //   method: "POST",
-        //   body: JSON.stringify(form_details),
-        // })
-        //   .then((response) => response.json())
-        //   .then((result) => {
-        //     // Handle the result
-        //     console.log(result);
-        //     toast.success(result.Message, {
-        //       autoClose: 1000,
-        //       position: toast.POSITION.TOP_RIGHT,
-        //       onClose: () => {
-        //         navigate("/");
-        //       },
-        //     });
-        //   })
-        //   .catch((error) => {
-        //     // Handle errors
-        //     console.error(error);
-        //     toast.error("An error occurred.", {
-        //       autoClose: 1000,
-        //       position: toast.POSITION.TOP_RIGHT,
-        //     });
-        //   });
+        let data = await fetch("http://43.205.208.162:5009/add_new_poc", {
+          method: "POST",
+          body: JSON.stringify(form_details),
+        })
+          .then((response) => response.json())
+          .then((result) => {
+            // Handle the result
+            console.log(result);
+            toast.success(result.Message, {
+              autoClose: 1000,
+              position: toast.POSITION.TOP_RIGHT,
+              onClose: () => {
+                navigate("/");
+              },
+            });
+          })
+          .catch((error) => {
+            // Handle errors
+            console.error(error);
+            toast.error("An error occurred.", {
+              autoClose: 1000,
+              position: toast.POSITION.TOP_RIGHT,
+            });
+          });
       };
       saveRevenueDetails();
     }
